@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>메한 AI</title>
+<style>
+body {
+  margin:0; background:#eee8ff; color:#49365e;
+  font-family:sans-serif; text-align:center;
+}
+h1 {color:#8056b5}
+#avatar {
+  width:230px;height:260px;margin:25px auto;
+  position:relative;
+}
+.ears {
+  position:absolute;top:0;width:100%;font-size:65px;
+}
+.face {
+  position:absolute;top:45px;left:20px;
+  width:190px;height:195px;border-radius:48% 48% 45% 45%;
+  background:#f3d8ed;border:5px solid #b28acb;
+}
+.hair {
+  position:absolute;top:-15px;left:-5px;
+  width:200px;height:90px;border-radius:50% 50% 20% 20%;
+  background:#b9a3d9;
+}
+.eyes {position:absolute;top:85px;width:100%;font-size:28px}
+.mouth {position:absolute;top:130px;width:100%;font-size:30px}
+#message {font-size:19px;min-height:30px}
+input {
+  width:65%;padding:14px;border:0;border-radius:20px;
+  font-size:16px;
+}
+button {
+  padding:13px 17px;border:0;border-radius:20px;
+  background:#986ac2;color:white;font-size:16px;
+}
+</style>
+</head>
+<body>
+<h1>💜 메한 AI 💜</h1>
+<div id="avatar">
+  <div class="ears">🐱</div>
+  <div class="face">
+    <div class="hair"></div>
+    <div class="eyes" id="eyes">◕　◕</div>
+    <div class="mouth" id="mouth">ᴗ</div>
+  </div>
+</div>
+<div id="message">안녕! 나는 메한이야! 💜</div>
+<br>
+<input id="input" placeholder="메한에게 말해줘!">
+<button onclick="send()">보내기</button>
+<button onclick="listen()">🎤</button>
+
+<script>
+function emotion(t) {
+ let e="normal";
+ if(/슬퍼|속상|울어|힘들|우울|눈물/.test(t)) e="sad";
+ else if(/화나|짜증|싫어|열받|분해/.test(t)) e="angry";
+ else if(/좋아|행복|최고|사랑|신나|고마워/.test(t)) e="happy";
+ else if(/놀라|헐|대박|진짜|뭐라고/.test(t)) e="surprise";
+
+ const eyes=document.getElementById("eyes");
+ const mouth=document.getElementById("mouth");
+ const avatar=document.querySelector(".face");
+
+ if(e==="sad") {
+  eyes.textContent="｡　｡"; mouth.textContent="︵";
+ } else if(e==="angry") {
+  eyes.textContent="ಠ　ಠ"; mouth.textContent="へ";
+ } else if(e==="happy") {
+  eyes.textContent="＾　＾"; mouth.textContent="ω";
+ } else if(e==="surprise") {
+  eyes.textContent="O　O"; mouth.textContent="O";
+ } else {
+  eyes.textContent="◕　◕"; mouth.textContent="ᴗ";
+ }
+ return e;
+}
+
+function speak(t) {
+ const u=new SpeechSynthesisUtterance(t);
+ u.lang="ko-KR";
+ u.rate=0.9;
+ speechSynthesis.cancel();
+ speechSynthesis.speak(u);
+}
+
+function send() {
+ const input=document.getElementById("input");
+ const t=input.value.trim();
+ if(!t) return;
+ const e=emotion(t);
+ let answer="응응! 나 듣고 있어! 💜";
+ if(e==="sad") answer="많이 속상했구나... 내가 옆에 있어줄게.";
+ if(e==="angry") answer="으으! 정말 화났겠다!";
+ if(e==="happy") answer="우와! 나도 너무 기뻐!";
+ if(e==="surprise") answer="에에?! 정말?! 놀랐어!";
+ document.getElementById("message").textContent=answer;
+ speak(answer);
+ input.value="";
+}
+
+function listen() {
+ const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+ if(!SR) {
+  alert("음성 인식은 크롬 브라우저에서 시도해 줘!");
+  return;
+ }
+ const r=new SR();
+ r.lang="ko-KR";
+ r.onresult=(event)=>{
+  document.getElementById("input").value=
+  event.results[0][0].transcript;
+  send();
+ };
+ r.onerror=()=>alert("마이크 권한을 확인해 줘!");
+ r.start();
+}
+</script>
+</body>
+</html>
